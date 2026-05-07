@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Snake Game</title>
     <style>
         * {
@@ -11,69 +11,118 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --shell: #e8e7e2;
+            --shell-dark: #b8b7af;
+            --shell-light: #f8f7f3;
+            --screen-bezel: #8b8f94;
+            --screen-glow: #8d9840;
+            --screen-dim: #72823c;
+            --ink: #24301f;
+            --button: #1a1a1a;
+            --button-dark: #050505;
+            --accent: #1e3f9a;
+            --gb-scale: 1;
+        }
+
+        html {
+            touch-action: none;
+            overscroll-behavior: none;
+        }
+
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: 'Courier New', monospace;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background:
+                radial-gradient(circle at top, rgba(255, 255, 255, 0.92), transparent 42%),
+                linear-gradient(160deg, #dcdcd7 0%, #b9bbb0 100%);
             padding: 10px;
+            color: var(--ink);
+            overflow: hidden;
+            touch-action: none;
+            overscroll-behavior: none;
+            user-select: none;
+        }
+
+        .stage {
+            position: relative;
+            display: inline-block;
         }
 
         .container {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 15px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            padding: 20px;
-            max-width: 500px;
-            width: 100%;
+            position: relative;
+            width: 342px;
+            background:
+                linear-gradient(145deg, #f9f8f5, #e6e5e0 40%, #d4d3cd 100%);
+            border-radius: 22px 22px 48px 22px;
+            box-shadow:
+                0 24px 42px rgba(0, 0, 0, 0.24),
+                inset 0 4px 0 rgba(255, 255, 255, 0.88),
+                inset 0 -12px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(117, 123, 130, 0.28);
+            padding: 12px 14px 16px;
+            overflow: hidden;
+            transform-origin: top left;
         }
 
-        .header {
-            text-align: center;
-            margin-bottom: 20px;
+        .container::before {
+            content: '';
+            position: absolute;
+            inset: 10px 12px auto 12px;
+            height: 12px;
+            border-radius: 999px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.52), rgba(255, 255, 255, 0.08));
+        }
+
+        .brand {
+            display: inline-block;
+            font-size: 0.62rem;
+            color: #293792;
+            font-weight: 700;
         }
 
         h1 {
-            color: #333;
-            font-size: 2.5em;
-            margin-bottom: 10px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .score-board {
-            display: flex;
-            justify-content: space-around;
-            margin-bottom: 20px;
-            gap: 10px;
-        }
-
-        .score-item {
-            background: #f0f0f0;
-            padding: 15px 25px;
-            border-radius: 10px;
-            text-align: center;
-            flex: 1;
-        }
-
-        .score-label {
-            color: #666;
-            font-size: 0.9em;
-            margin-bottom: 5px;
-        }
-
-        .score-value {
-            color: #667eea;
-            font-size: 1.8em;
-            font-weight: bold;
+            color: #293792;
+            font-size: 0.92rem;
+            margin-left: 0;
+            letter-spacing: 0.02em;
+            font-weight: 700;
         }
 
         .game-board-wrapper {
             position: relative;
-            width: 100%;
-            padding-bottom: 100%;
-            margin-bottom: 20px;
+            width: 89%;
+            aspect-ratio: 1;
+            margin: 50px auto 0;
+            margin-bottom: 0;
+        }
+
+        .gameboy-logo {
+            margin: 4px 0 0 3px;
+            color: #293792;
+            font-weight: 700;
+            letter-spacing: 0;
+            line-height: 0.9;
+            font-size: 0.78rem;
+        }
+
+        .gameboy-logo span {
+            font-size: 0.62rem;
+            margin-right: 2px;
+        }
+
+        .gameboy-logo strong {
+            font-size: 1.24rem;
+            letter-spacing: -0.02em;
+        }
+
+        .gameboy-logo sup {
+            font-size: 0.45rem;
+            vertical-align: text-top;
+            margin-left: 2px;
         }
 
         .game-board {
@@ -82,66 +131,158 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: #1a1a2e;
-            border: 3px solid #667eea;
-            border-radius: 10px;
+            background:
+                linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 16%),
+                linear-gradient(180deg, #d2e58d 0%, #c1d978 22%, #a9c35f 100%);
+            border: 14px solid #8c8f93;
+            border-radius: 18px 18px 24px 24px;
             display: grid;
             grid-template-columns: repeat(20, 1fr);
             grid-template-rows: repeat(20, 1fr);
             gap: 0;
             touch-action: none;
+            overflow: hidden;
+            box-shadow:
+                inset 0 0 0 4px rgba(255, 255, 255, 0.06),
+                inset 0 0 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .screen-scorebar {
+            position: absolute;
+            left: 10px;
+            right: 10px;
+            top: 5px;
+            height: 22px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 3px;
+            color: rgba(44, 63, 20, 0.96);
+            font-family: 'Courier New', monospace;
+            font-size: 0.62rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            pointer-events: none;
+            z-index: 3;
+            text-shadow: 0 1px 0 rgba(255, 255, 255, 0.24);
+        }
+
+        .screen-scorebar::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: -3px;
+            height: 1px;
+            background: rgba(88, 110, 40, 0.3);
+        }
+
+        .battery-dot {
+            position: absolute;
+            left: 17px;
+            top: 75px;
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: #db2a22;
+            box-shadow: 0 0 0 1px rgba(60, 0, 0, 0.25);
+        }
+
+        .battery-label {
+            position: absolute;
+            left: 13px;
+            top: 88px;
+            font-size: 0.3rem;
+            color: #8d8f98;
+            letter-spacing: 0.14em;
+            transform: rotate(-1deg);
+        }
+
+        .screen-brand {
+            display: none;
+        }
+
+        .hud-data {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+        }
+
+        .speaker {
+            position: absolute;
+            right: 15px;
+            bottom: 10px;
+            width: 74px;
+            height: 48px;
+            transform: rotate(10deg);
+            background:
+                repeating-linear-gradient(110deg, transparent 0 7px, rgba(71, 71, 71, 0.95) 7px 10px, transparent 10px 16px);
+            opacity: 0.7;
+            pointer-events: none;
         }
 
         .cell {
-            background: #1a1a2e;
-            border: 0.5px solid #2d3561;
+            background: rgba(117, 138, 55, 0.12);
+            border: 0.5px solid rgba(83, 103, 31, 0.12);
         }
 
         .snake {
-            background: #00ff00;
-            box-shadow: 0 0 2px #00cc00;
-            border-radius: 2px;
+            background: #51641f;
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+            border-radius: 1px;
         }
 
         .snake.head {
-            background: #00ff00;
-            box-shadow: 0 0 8px #00ff00;
+            background: #314016;
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06);
             z-index: 2;
         }
 
         .food {
-            background: #ff3333;
-            box-shadow: 0 0 8px #ff3333;
-            border-radius: 50%;
+            background: #6e7f27;
+            box-shadow: 0 0 0 1px rgba(79, 93, 29, 0.35);
+            border-radius: 1px;
             animation: pulse 0.5s infinite alternate;
         }
 
         @keyframes pulse {
             0% {
-                box-shadow: 0 0 8px #ff3333;
+                box-shadow: 0 0 0 1px rgba(79, 93, 29, 0.22);
             }
             100% {
-                box-shadow: 0 0 15px #ff3333;
+                box-shadow: 0 0 0 1px rgba(79, 93, 29, 0.4);
             }
         }
 
         .controls {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-bottom: 20px;
-            max-width: 200px;
-            margin-left: auto;
-            margin-right: auto;
+            position: relative;
+            height: 212px;
+            margin-top: 10px;
+            margin-bottom: 0;
+            z-index: 1;
+        }
+
+        .dpad-cluster {
+            position: absolute;
+            left: 12px;
+            top: 14px;
+            width: 144px;
+            height: 144px;
+            transform: scale(1.2);
+            transform-origin: top left;
         }
 
         .control-btn {
+            position: absolute;
             aspect-ratio: 1;
-            background: #667eea;
-            color: white;
+            background: linear-gradient(180deg, #1c1c1c, #080808);
+            color: #ededed;
             border: none;
-            border-radius: 50%;
-            font-size: 1.5em;
+            border-radius: 8px;
+            font-size: 1.35em;
             cursor: pointer;
             display: flex;
             justify-content: center;
@@ -151,44 +292,175 @@
             user-select: none;
             -webkit-user-select: none;
             -webkit-touch-callout: none;
+            touch-action: manipulation;
+            box-shadow:
+                inset 0 2px 0 rgba(255, 255, 255, 0.08),
+                0 4px 0 #000000;
+        }
+
+        .dpad-up {
+            left: 38px;
+            top: -10px;
+            width: 34px;
+            height: 50px;
+            border-radius: 7px 7px 5px 5px;
+        }
+
+        .dpad-left {
+            left: -5px;
+            top: 33px;
+            width: 50px;
+            height: 34px;
+            border-radius: 7px 5px 5px 7px;
+        }
+
+        .dpad-down {
+            left: 38px;
+            top: 60px;
+            width: 34px;
+            height: 50px;
+            border-radius: 5px 5px 7px 7px;
+        }
+
+        .dpad-right {
+            left: 65px;
+            top: 33px;
+            width: 50px;
+            height: 34px;
+            border-radius: 5px 7px 7px 5px;
         }
 
         .control-btn:active {
-            background: #764ba2;
-            transform: scale(0.95);
+            transform: translateY(3px);
+            box-shadow:
+                inset 0 2px 0 rgba(255, 255, 255, 0.05),
+                0 1px 0 #000000;
         }
 
-        .button-row {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
+        .action-cluster {
+            position: absolute;
+            right: -2px;
+            top: 56px;
+            width: 146px;
+            height: 116px;
+            z-index: 1;
         }
 
-        .button-row:first-child {
-            grid-column: span 3;
+        .action-btn {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 0.9rem;
+            line-height: 1;
+            padding: 0;
+            color: #fff;
+            background: linear-gradient(180deg, #c91b7a, #a31162 55%, #72083f);
+            touch-action: manipulation;
+            box-shadow:
+                inset 0 2px 0 rgba(255, 255, 255, 0.22),
+                0 4px 0 #5a0731;
         }
 
-        .start-btn, .pause-btn, .reset-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+        .action-btn:active {
+            transform: translateY(3px);
+            box-shadow:
+                inset 0 2px 0 rgba(255, 255, 255, 0.12),
+                0 1px 0 #5a0731;
+        }
+
+        .face-label {
+            position: absolute;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.14em;
+            color: #32448e;
+            pointer-events: none;
+        }
+
+        .pause-btn {
+            left: 42px;
+            top: -10px;
+        }
+
+        .reset-btn {
+            left: 104px;
+            top: -34px;
+        }
+
+        .pause-label {
+            left: 44px;
+            top: 38px;
+        }
+
+        .reset-label {
+            left: 104px;
+            top: 18px;
+        }
+
+        .start-select-cluster {
+            position: absolute;
+            left: calc(50% + 5px);
+            top: 135px;
+            width: 164px;
+            height: 50px;
+            transform: translateX(-38%);
+            z-index: 2;
+        }
+
+        .pill-btn {
+            position: absolute;
+            width: 62px;
+            height: 18px;
+            padding: 0;
             border: none;
-            padding: 12px 30px;
-            border-radius: 25px;
-            font-size: 1em;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-weight: bold;
-            width: 100%;
-            margin-bottom: 10px;
+            border-radius: 999px;
+            background: linear-gradient(180deg, #c7c7c7, #8f8f8f);
+            touch-action: manipulation;
+            z-index: 3;
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, 0.8),
+                0 2px 0 rgba(104, 104, 104, 0.7);
         }
 
-        .start-btn:hover, .pause-btn:hover, .reset-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        .pill-btn:active {
+            transform: translateY(2px);
+            box-shadow:
+                inset 0 1px 0 rgba(255, 255, 255, 0.6),
+                0 1px 0 rgba(104, 104, 104, 0.7);
         }
 
-        .start-btn:active, .pause-btn:active, .reset-btn:active {
-            transform: translateY(0);
+        .select-btn {
+            left: 20px;
+            top: -3px;
+            transform: rotate(-14deg);
+        }
+
+        .start-mini-btn {
+            left: 104px;
+            top: -5px;
+            transform: rotate(-14deg);
+        }
+
+        .menu-label {
+            position: absolute;
+            top: 16px;
+            font-size: 0.66rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            color: #32448e;
+            transform: rotate(-14deg);
+            pointer-events: none;
+        }
+
+        .select-label {
+            left: 32px;
+            top: 19px;
+        }
+
+        .start-label {
+            left: 120px;
+            top: 18px;
         }
 
         .game-over-screen {
@@ -197,11 +469,11 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.9);
+            background: rgba(80, 87, 60, 0.88);
             display: none;
             justify-content: center;
             align-items: center;
-            border-radius: 10px;
+            border-radius: 6px;
             z-index: 10;
         }
 
@@ -211,39 +483,45 @@
 
         .game-over-content {
             text-align: center;
-            color: white;
+            color: #edf4cb;
         }
 
         .game-over-content h2 {
-            font-size: 2.5em;
+            font-size: 2.3em;
             margin-bottom: 20px;
-            color: #ff3333;
+            color: #f5f8e6;
+            letter-spacing: 0.12em;
         }
 
         .game-over-content p {
-            font-size: 1.5em;
+            font-size: 1.35em;
             margin-bottom: 10px;
         }
 
         .game-over-content .final-score {
-            font-size: 2em;
-            color: #00ff00;
+            font-size: 2.2em;
+            color: #f0f4c3;
             margin-bottom: 30px;
         }
 
         .info {
-            background: #f9f9f9;
-            padding: 15px;
-            border-radius: 10px;
+            background: linear-gradient(180deg, rgba(243, 243, 238, 0.98), rgba(224, 223, 216, 0.98));
+            padding: 15px 16px;
+            border-radius: 16px;
             margin-top: 20px;
-            font-size: 0.9em;
-            color: #666;
+            font-size: 1em;
+            color: #565d67;
             line-height: 1.6;
+            border: 1px solid rgba(112, 118, 124, 0.35);
+            position: relative;
+            z-index: 1;
         }
 
         .info h3 {
-            color: #333;
+            color: #4c5561;
             margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
         }
 
         .info ul {
@@ -255,103 +533,86 @@
         }
 
         @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+
             .container {
-                padding: 15px;
+                width: 342px;
             }
 
-            h1 {
-                font-size: 2em;
+            .controls {
+                height: 214px;
             }
 
-            .score-board {
-                flex-direction: column;
-            }
-
-            .info {
-                font-size: 0.85em;
+            .game-board-wrapper {
+                margin-top: 60px;
             }
         }
 
         @media (max-width: 400px) {
-            h1 {
-                font-size: 1.5em;
+            .container {
+                width: 342px;
             }
 
-            .score-item {
-                padding: 10px 15px;
+            .game-board-wrapper {
+                margin-top: 56px;
             }
 
-            .score-value {
-                font-size: 1.5em;
+            .controls {
+                height: 206px;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>🐍 SNAKE</h1>
-        </div>
-
-        <div class="score-board">
-            <div class="score-item">
-                <div class="score-label">Score</div>
-                <div class="score-value" id="score">0</div>
-            </div>
-            <div class="score-item">
-                <div class="score-label">High Score</div>
-                <div class="score-value" id="highScore">0</div>
-            </div>
-            <div class="score-item">
-                <div class="score-label">Level</div>
-                <div class="score-value" id="level">1</div>
-            </div>
-        </div>
-
-        <div class="game-board-wrapper">
-            <div class="game-board" id="gameBoard">
-                <div class="game-over-screen" id="gameOverScreen">
-                    <div class="game-over-content">
-                        <h2>GAME OVER!</h2>
-                        <p>Your Score:</p>
-                        <div class="final-score" id="finalScore">0</div>
+    <div class="stage">
+        <div class="container">
+            <div class="game-board-wrapper">
+                <div class="battery-dot"></div>
+                <div class="battery-label">BATTERY</div>
+                <div class="game-board" id="gameBoard">
+                    <div class="screen-scorebar" id="screenScorebar"></div>
+                    <div class="game-over-screen" id="gameOverScreen">
+                        <div class="game-over-content">
+                            <h2>GAME OVER!</h2>
+                            <p>Your Score:</p>
+                            <div class="final-score" id="finalScore">0</div>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="controls">
-            <div style="grid-column: span 3;">
-                <button class="start-btn" id="startBtn">START GAME</button>
+            <div class="gameboy-logo"><span>Yucan</span><strong>GAME BOY</strong><sup>TM</sup></div>
+
+            <div class="hud-data" aria-hidden="true">
+                <div id="score">0</div>
+                <div id="highScore">0</div>
+                <div id="level">1</div>
             </div>
-            <div style="grid-column: span 3;">
-                <div class="button-row">
-                    <div></div>
-                    <button class="control-btn" id="upBtn">▲</button>
-                    <div></div>
-                    <button class="control-btn" id="leftBtn">◄</button>
-                    <button class="control-btn" id="downBtn">▼</button>
-                    <button class="control-btn" id="rightBtn">►</button>
+
+            <div class="controls">
+                <div class="dpad-cluster" aria-label="direction controls">
+                    <button class="control-btn dpad-up" id="upBtn">▲</button>
+                    <button class="control-btn dpad-left" id="leftBtn">◄</button>
+                    <button class="control-btn dpad-down" id="downBtn">▼</button>
+                    <button class="control-btn dpad-right" id="rightBtn">►</button>
+                </div>
+
+                <div class="start-select-cluster" aria-label="menu controls">
+                    <button class="pill-btn select-btn" id="selectBtn" aria-label="Select"></button>
+                    <button class="pill-btn start-mini-btn" id="startBtn" aria-label="Start"></button>
+                    <span class="menu-label select-label">SELECT</span>
+                    <span class="menu-label start-label">START</span>
+                </div>
+
+                <div class="action-cluster" aria-label="game actions">
+                    <button class="action-btn pause-btn" id="pauseBtn" aria-label="Pause"></button>
+                    <button class="action-btn reset-btn" id="resetBtn" aria-label="Reset"></button>
+                    <span class="face-label pause-label">PAUSE</span>
+                    <span class="face-label reset-label">RESET</span>
                 </div>
             </div>
-            <div style="grid-column: span 3;">
-                <button class="pause-btn" id="pauseBtn">PAUSE</button>
-            </div>
-            <div style="grid-column: span 3;">
-                <button class="reset-btn" id="resetBtn">RESET</button>
-            </div>
-        </div>
-
-        <div class="info">
-            <h3>How to Play:</h3>
-            <ul>
-                <li><strong>Desktop:</strong> Use arrow keys or on-screen buttons</li>
-                <li><strong>Mobile:</strong> Use on-screen buttons or swipe</li>
-                <li>Eat the red food to grow</li>
-                <li>Don't hit walls or yourself!</li>
-                <li>Each food eaten increases your score by 10 points</li>
-                <li>Speed increases as you progress</li>
-            </ul>
         </div>
     </div>
 
@@ -369,7 +630,7 @@
         let nextDirection = {x: 1, y: 0};
         let food = {x: 15, y: 15};
         let score = 0;
-        let highScore = localStorage.getItem('snakeHighScore') || 0;
+        let highScore = Number(localStorage.getItem('snakeHighScore')) || 0;
         let gameActive = false;
         let gamePaused = false;
         let gameSpeed = INITIAL_SPEED;
@@ -387,6 +648,10 @@
         // Create game grid
         function createGameGrid() {
             gameBoard.innerHTML = '';
+            const scorebar = document.createElement('div');
+            scorebar.className = 'screen-scorebar';
+            scorebar.id = 'screenScorebar';
+            gameBoard.appendChild(scorebar);
             for (let i = 0; i < GRID_SIZE * GRID_SIZE; i++) {
                 const cell = document.createElement('div');
                 cell.className = 'cell';
@@ -440,6 +705,12 @@
             // Update score
             document.getElementById('score').textContent = score;
             document.getElementById('level').textContent = Math.floor(score / 50) + 1;
+            const scorebar = document.getElementById('screenScorebar');
+            if (scorebar) {
+                const leftValue = String(score).padStart(4, '0');
+                const rightValue = String(highScore).padStart(4, '0');
+                scorebar.innerHTML = `<span class="screen-score-left">${leftValue}</span><span class="screen-score-right">${rightValue}</span>`;
+            }
         }
 
         // Update direction
@@ -517,10 +788,13 @@
         // Start game
         function startGame() {
             if (gameActive) return;
+
+            if (document.getElementById('gameOverScreen').classList.contains('active')) {
+                resetGame();
+            }
             
             gameActive = true;
             gamePaused = false;
-            document.getElementById('startBtn').textContent = 'RESUME';
             document.getElementById('pauseBtn').disabled = false;
             document.getElementById('gameOverScreen').classList.remove('active');
             
@@ -532,7 +806,6 @@
             if (!gameActive) return;
             
             gamePaused = !gamePaused;
-            document.getElementById('pauseBtn').textContent = gamePaused ? 'RESUME' : 'PAUSE';
         }
 
         // End game
@@ -550,8 +823,6 @@
             
             document.getElementById('finalScore').textContent = score;
             document.getElementById('gameOverScreen').classList.add('active');
-            document.getElementById('startBtn').textContent = 'START GAME';
-            document.getElementById('pauseBtn').textContent = 'PAUSE';
         }
 
         // Reset game
@@ -569,23 +840,31 @@
             generateFood();
             updateDisplay();
             
-            document.getElementById('startBtn').textContent = 'START GAME';
-            document.getElementById('pauseBtn').textContent = 'PAUSE';
             document.getElementById('gameOverScreen').classList.remove('active');
         }
 
         // Setup event listeners
         function setupEventListeners() {
+            const bindTouchButton = (element, handler) => {
+                const handlePress = (event) => {
+                    event.preventDefault();
+                    handler();
+                };
+
+                element.addEventListener('click', handler);
+                element.addEventListener('touchend', handlePress, { passive: false });
+            };
+
             // Button controls
-            document.getElementById('startBtn').addEventListener('click', startGame);
-            document.getElementById('pauseBtn').addEventListener('click', togglePause);
-            document.getElementById('resetBtn').addEventListener('click', resetGame);
+            bindTouchButton(document.getElementById('startBtn'), startGame);
+            bindTouchButton(document.getElementById('pauseBtn'), togglePause);
+            bindTouchButton(document.getElementById('resetBtn'), resetGame);
 
             // Direction buttons
-            document.getElementById('upBtn').addEventListener('click', () => updateDirection(0, -1));
-            document.getElementById('downBtn').addEventListener('click', () => updateDirection(0, 1));
-            document.getElementById('leftBtn').addEventListener('click', () => updateDirection(-1, 0));
-            document.getElementById('rightBtn').addEventListener('click', () => updateDirection(1, 0));
+            bindTouchButton(document.getElementById('upBtn'), () => updateDirection(0, -1));
+            bindTouchButton(document.getElementById('downBtn'), () => updateDirection(0, 1));
+            bindTouchButton(document.getElementById('leftBtn'), () => updateDirection(-1, 0));
+            bindTouchButton(document.getElementById('rightBtn'), () => updateDirection(1, 0));
 
             // Keyboard controls
             document.addEventListener('keydown', (e) => {
@@ -610,6 +889,22 @@
                         break;
                 }
             });
+
+            document.addEventListener('dblclick', (e) => {
+                e.preventDefault();
+            }, { passive: false });
+
+            document.addEventListener('gesturestart', (e) => {
+                e.preventDefault();
+            }, { passive: false });
+
+            document.addEventListener('gesturechange', (e) => {
+                e.preventDefault();
+            }, { passive: false });
+
+            document.addEventListener('gestureend', (e) => {
+                e.preventDefault();
+            }, { passive: false });
 
             // Touch/Swipe controls
             let touchStartX = 0;
@@ -665,7 +960,29 @@
         }
 
         // Start the game
-        window.addEventListener('DOMContentLoaded', init);
+        function updateGameboyScale() {
+            const stage = document.querySelector('.stage');
+            const container = document.querySelector('.container');
+
+            if (!stage || !container) return;
+
+            container.style.transform = 'none';
+            const baseWidth = 342;
+            const baseHeight = container.scrollHeight;
+            const availableWidth = window.innerWidth - 20;
+            const availableHeight = window.innerHeight - 20;
+            const scale = Math.min(availableWidth / baseWidth, availableHeight / baseHeight);
+
+            stage.style.width = `${baseWidth * scale}px`;
+            stage.style.height = `${baseHeight * scale}px`;
+            container.style.transform = `scale(${scale})`;
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            init();
+            updateGameboyScale();
+        });
+        window.addEventListener('resize', updateGameboyScale);
     </script>
 </body>
 </html>
